@@ -19,6 +19,10 @@
                                        implementationClass="nl.jord1e.hledger.idea.rules.RulesSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="nl.jord1e.hledger.idea.rules.RulesColorSettingsPage"/>
         <lang.commenter language="RULES" implementationClass="nl.jord1e.hledger.idea.rules.RulesCommenter"/>
+
+        <fileType name="Ledger Journal" implementationClass="nl.jord1e.hledger.idea.journal.JournalFileType"
+                  fieldName="INSTANCE"
+                  language="JOURNAL" extensions="journal"/>
     </extensions>
 
     <actions>
