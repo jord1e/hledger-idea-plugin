@@ -1,0 +1,41 @@
+{
+  parserClass="nl.jord1e.hledger.idea.rules.parser.RulesParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Rules"
+  psiImplClassSuffix="Impl"
+  psiPackage="nl.jord1e.hledger.idea.rules.psi"
+  psiImplPackage="nl.jord1e.hledger.idea.rules.psi.impl"
+
+  elementTypeHolderClass="nl.jord1e.hledger.idea.rules.psi.RulesTypes"
+  elementTypeClass="nl.jord1e.hledger.idea.rules.psi.RulesElementType"
+  tokenTypeClass="nl.jord1e.hledger.idea.rules.psi.RulesTokenType"
+
+//  psiImplUtilClass="nl.jord1e.hledger.idea.rules.psi.impl.RulesPsiImplUtil"
+tokens = [
+NUMBER = "Number"
+SKIP = "Skip"
+FIELDS = "Fields"
+SEPERATOR = "Seperator"
+END = "End"
+DATE_FORMAT = "date-format"
+NEWEST_FIRST = "newest-first"
+INCLUDE = "Include"
+BALANCE_TYPE = "balance-type"
+BALANCE_ASSERTION_TYPE = "= / =* / == / ==*"
+]
+}
+
+simpleFile ::= item_*
+
+//private item_ ::= (skip_|property|COMMENT|CRLF)
+
+private item_ ::= (skipN|balanceExp|newestFirstExp|COMMENT|CRLF)
+
+skipN ::= SKIP NUMBER | SKIP
+private newestFirstExp ::= NEWEST_FIRST
+balanceExp ::= BALANCE_TYPE BALANCE_ASSERTION
+
+//property ::= (KEY? SEPARATOR VALUE?) | KEY
+

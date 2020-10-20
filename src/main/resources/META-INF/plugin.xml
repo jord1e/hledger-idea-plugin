@@ -1,0 +1,27 @@
+<idea-plugin>
+    <id>nl.jord1e.hledger.idea.hledger-idea-plugin</id>
+    <name>Plain Text Accounting</name>
+    <vendor>Jord1e</vendor>
+
+    <description><![CDATA[
+    <h1>Very Short description</h1>...................................
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType name="Hledger Rules" implementationClass="nl.jord1e.hledger.idea.rules.RulesFileType"
+                  fieldName="INSTANCE"
+                  language="RULES" extensions="rules"/>
+        <lang.parserDefinition language="RULES"
+                               implementationClass="nl.jord1e.hledger.idea.rules.RulesParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="RULES"
+                                       implementationClass="nl.jord1e.hledger.idea.rules.RulesSyntaxHighlighterFactory"/>
+        <colorSettingsPage implementation="nl.jord1e.hledger.idea.rules.RulesColorSettingsPage"/>
+        <lang.commenter language="RULES" implementationClass="nl.jord1e.hledger.idea.rules.RulesCommenter"/>
+    </extensions>
+
+    <actions>
+
+    </actions>
+</idea-plugin>
