@@ -1,0 +1,73 @@
+{
+  parserClass="nl.jord1e.hledger.idea.rules.parser.RulesParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Rules"
+  psiImplClassSuffix="Impl"
+  psiPackage="nl.jord1e.hledger.idea.rules.psi"
+  psiImplPackage="nl.jord1e.hledger.idea.rules.psi.impl"
+
+  elementTypeHolderClass="nl.jord1e.hledger.idea.rules.psi.RulesTypes"
+  elementTypeClass="nl.jord1e.hledger.idea.rules.psi.RulesElementType"
+  tokenTypeClass="nl.jord1e.hledger.idea.rules.psi.RulesTokenType"
+
+//  psiImplUtilClass="nl.jord1e.hledger.idea.rules.psi.impl.RulesPsiImplUtil"
+  tokens = [
+    digit = 'regexp:[0-9]'
+    space_char = 'regexp:[ \t]'
+    char='regexp:[^\n]'
+    comment_char='regexp:[#;]'
+    newline='regexp:\n'
+    regexp='regexp'
+
+    d_skip = 'skip'
+    d_fields = 'fields'
+    d_separator = 'separator'
+    d_end = 'end'
+    d_date_format = 'date-format'
+    d_newest_first = 'newest-first'
+    d_include = 'include'
+    d_balance_type = 'balance-type'
+    d_if = 'if'
+    balance_assertion_type = '= / == / =* / ==*'
+
+    percent='%'
+    and='&'
+    quote='"'
+    tilde='~'
+    comma=','
+  ]
+}
+
+root ::= rule*
+
+private rule ::= field_list|field_assignment|conditional_block|skip|'newestfirst'|'date-format'|balance_type|comment|separator|blank newline
+
+space ::= space_char+
+blank ::= space?
+value ::= space? char* space?
+journal_field ::= 'date' | 'date2' | 'status' | 'code' | 'description' | 'comment' | 'account1' | 'account2' | 'amount' | journal_pseudo_field
+journal_pseudo_field ::= 'amount-in' | 'amount-out' | 'currency'
+comment ::= space? ('#'|';') value
+assignment_separator ::= space | (":" space?)
+field_assignment ::= journal_field assignment_separator field_value
+
+private quoted_field_name ::= '"' char+ '"'
+private bare_field_name ::= 'regexp:[^ \t#;]'+
+field_name ::= quoted_field_name | bare_field_name
+
+number ::= digit+
+csv_field ::= field_name | number
+field_list ::= 'fields' space field_name (space? ',' space? field_name)*
+field_reference ::= '%' csv_field
+field_value ::= value | field_reference
+field_matcher ::= (csv_field?)? '~' space? patterns
+patterns ::= (newline regexp)* regexp
+indented_block ::= (space (field_assignment | comment ) newline)+
+conditional_block ::= 'if' (field_matcher newline)+ indented_block
+skip ::= 'skip' number?
+balance_type ::= 'balance-type' balance_assertion_type
+separator ::= 'separator' char
+
+

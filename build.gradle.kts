@@ -50,7 +50,7 @@ tasks {
 
     task<GenerateLexer>("generateRulesLexer") {
         dependsOn(":generateRulesParser")
-        source = "src/main/kotlin/nl/jord1e/hledger/idea/rules/Rules.flex"
+        source = "src/main/grammars/Rules.flex"
         targetDir = "src/main/gen/nl/jord1e/hledger/idea/rules/"
         targetClass = "RulesLexer"
         purgeOldFiles = true
@@ -58,7 +58,7 @@ tasks {
     }
 
     task<GenerateParser>("generateRulesParser") {
-        source = "src/main/kotlin/nl/jord1e/hledger/idea/rules/Rules.bnf"
+        source = "src/main/grammars/Rules.bnf"
         targetRoot = "src/main/gen/"
         pathToParser = "/nl/jord1e/hledger/idea/rules/parser/RulesParser.java"
         pathToPsiRoot = "/nl/jord1e/hledger/idea/rules/psi"
