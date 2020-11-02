@@ -1,4 +1,4 @@
-package nl.jord1e.hledger.idea.rules
+package nl.jord1e.idea.pta.rules.lang.parser
 
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
@@ -8,14 +8,16 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
-import nl.jord1e.hledger.idea.rules.parser.RulesParser
-import nl.jord1e.hledger.idea.rules.psi.RulesFile
-import nl.jord1e.hledger.idea.rules.psi.RulesTypes
+import nl.jord1e.idea.pta.rules.lang.RulesLanguage
+import nl.jord1e.idea.pta.rules.lang.lexer.RulesLexerAdapter
+import nl.jord1e.idea.pta.rules.lang.psi.RulesFile
+import nl.jord1e.idea.pta.rules.lang.psi.RulesTypes
+import nl.jord1e.idea.pta.rules.parser.RulesParser
 
 class RulesParserDefinition : ParserDefinition {
 
     companion object {
-        val WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE)
+        val STRING_LITERALS = TokenSet.create(TokenType.WHITE_SPACE, RulesTypes.STRING)
         val COMMENTS = TokenSet.create(RulesTypes.COMMENT)
         val FILE = IFileElementType(RulesLanguage)
     }
@@ -24,7 +26,7 @@ class RulesParserDefinition : ParserDefinition {
 
     override fun createFile(viewProvider: FileViewProvider) = RulesFile(viewProvider)
 
-    override fun getStringLiteralElements() = WHITE_SPACES
+    override fun getStringLiteralElements() = STRING_LITERALS
 
     override fun getFileNodeType() = FILE
 

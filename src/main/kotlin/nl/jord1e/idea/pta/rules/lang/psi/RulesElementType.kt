@@ -1,7 +1,7 @@
-package nl.jord1e.hledger.idea.rules.psi
+package nl.jord1e.idea.pta.rules.lang.psi
 
 import com.intellij.psi.tree.IElementType
-import nl.jord1e.hledger.idea.rules.RulesLanguage
+import nl.jord1e.idea.pta.rules.lang.RulesLanguage
 
 class RulesElementType(debugName: String) : IElementType(debugName, RulesLanguage) {
 }

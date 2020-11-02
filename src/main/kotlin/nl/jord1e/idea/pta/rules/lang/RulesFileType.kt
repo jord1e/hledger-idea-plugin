@@ -1,6 +1,5 @@
-package nl.jord1e.hledger.idea.rules
+package nl.jord1e.idea.pta.rules.lang
 
-import com.intellij.icons.AllIcons
 import com.intellij.openapi.fileTypes.LanguageFileType
 
 object RulesFileType : LanguageFileType(RulesLanguage) {
@@ -9,7 +8,7 @@ object RulesFileType : LanguageFileType(RulesLanguage) {
 
     override fun getDefaultExtension() = "rules"
 
-    override fun getIcon() = AllIcons.FileTypes.Custom
+    override fun getIcon() = RulesIcons.RULES_FILE
 
     override fun getDescription() = "Hledger Rules File"
 

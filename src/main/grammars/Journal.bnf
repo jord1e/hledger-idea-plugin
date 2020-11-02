@@ -1,0 +1,154 @@
+//noinspection BnfUnusedRuleForFile
+{
+  parserClass="nl.jord1e.idea.pta.journal.parser.JournalParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Journal"
+  psiImplClassSuffix="Impl"
+  psiPackage="nl.jord1e.idea.pta.journal.lang.psi"
+  psiImplPackage="nl.jord1e.idea.pta.journal.lang.psi.impl"
+
+  elementTypeHolderClass="nl.jord1e.idea.pta.journal.lang.psi.JournalTypes"
+  elementTypeClass="nl.jord1e.idea.pta.journal.lang.psi.JournalElementType"
+  tokenTypeClass="nl.jord1e.idea.pta.journal.lang.psi.JournalTokenType"
+
+//  psiImplUtilClass="nl.jord1e.hledger.idea.journal.psi.impl.JournalPsiImplUtil"
+  tokens = [
+    LPAREN='('
+    RPAREN=')'
+
+    // todo ledger compact bracketed date syntax
+    LBRACKET='['
+    RBRACKET=']'
+
+    // todo ledger UNITPRICE TOTALPRICE FIXEDUNITPRICE & FIXEDTOTALPRICE
+    LBRACE='{'
+    RBRACE='}'
+
+    PIPE='|'
+    STAR='*'
+    COMMA=','
+    EXCLAMATION_MARK='!'
+    COLON=':'
+    DOUBLE_QUOTE='"'
+    MINUS='-'
+    FORWARD_SLASH='/'
+    AT='@'
+    ATAT='@@'
+    ATP='(@)'
+    ATATP='(@@)'
+
+    EQ='=' // single commodity, exclude subaccounts
+    EQSTAR='=*' // single commodity, include subaccounts
+    EQEQ='==' // multi commodity,  exclude subaccounts
+    EQEQSTAR='==*' // multi commodity,  include subaccounts
+
+    D_COMMODITY='commodity'
+    D_ACCOUNT='account'
+    D_ALIAS='alias'
+    D_END_ALIASES='end aliases'
+    D_APPLY_ACCOUNT='apply account'
+    D_END_APPLY_ACCOUNT='end apply account'
+    D_D='D'
+    D_INCLUDE='include'
+    D_P='P'
+    D_Y='Y'
+    // auto postings
+
+    STRING='regexp:[^\n\r]+' // todo *?
+
+    TAG_NAME='regexp:[a-zA-Z0-9-]+'
+    TAG_VALUE='regexp:[^:\r\n,]'
+
+    EOL='<<eol>>'
+    REGEXP='regexp:/.*/'
+
+    LINE_COMMENT='regexp:^[;#*].*$'
+    BLOCK_COMMENT_START='comment'
+    BLOCK_COMMENT_CONTENT='regexp:\R([\s\S]*?)\R?'
+    BLOCK_COMMENT_END='end comment'
+    EOL_COMMENT='regexp:;.*'
+
+    YEAR='regexp:[0-9]{4}'
+    SCIENTIFC_E='E'
+    POSITIVE_NUMBER='regexp:^[1-9][0-9]*$'
+    NEGATIVE_NUMBER='regexp:^-[1-9][0-9]*$'
+    NUMBER='regexp:(0|[1-9][0-9]*)(E-?[0-9]+|[.,][0-9]+)' // todo does not account for thousand seperators
+
+    IGNORE='journal::ignore'
+
+    ACCOUNT_PART='regexp:\w([ ]?\w+)*'
+    DATE='regexp:[0-9]{4}[-/.][0-9]{2}[-/.][0-9]{2}' // todo better regexp
+    CURRENCY_SYMBOL='regexp:[$¢£¤¥֏؋৲৳৻૱௹฿៛\u20a0-\u20bd\ua838\ufdfc\ufe69\uff04\uffe0\uffe1\uffe5\uffe6]'
+  ]
+}
+
+//root ::= (transaction | comment)*
+root ::= (transaction | comment | '<<eol>>' | directive)*
+private directive ::= y_dir
+  | d_dir
+  | p_dir
+  | alias_dir
+  | commodity_dir
+  | end_aliases_dir
+  | include_dir
+
+block_comment ::= BLOCK_COMMENT_START BLOCK_COMMENT_CONTENT BLOCK_COMMENT_END
+comment ::= LINE_COMMENT | block_comment | EOL_COMMENT
+
+// todo indenting
+transaction ::= transaction_date status? code? description? tag_comment? '<<eol>>' posting*
+transaction_date ::= simple_date ('=' secondary_date)?
+
+secondary_date ::= simple_date
+tag_posting_date ::= "date:" simple_date
+simple_date ::= DATE
+
+status ::= ('!' | '*')?
+code ::= '(' STRING ')'
+
+payee ::= STRING
+note ::= STRING
+description ::= (payee '|')? note
+account ::= (ACCOUNT_PART ':')+ (ACCOUNT_PART ':'?)?
+
+indented_line ::= posting | EOL_COMMENT
+posting ::= posting_account posting_total tag_comment? '<<eol>>'
+posting_total ::= (posting_amount posting_cost? balance_assertion?) | balance_assertion
+posting_assignment ::= posting_total
+
+posting_account ::= real_posting_account | unbalanced_virtual_posting_account | balanced_virtual_posting_account
+real_posting_account ::= account
+unbalanced_virtual_posting_account ::= '(' account ')'
+balanced_virtual_posting_account ::= '[' account ']'
+
+tags ::= tag (',' tag)*
+tag ::= TAG_NAME ':' TAG_VALUE?
+tag_comment ::= EOL_COMMENT tags?
+
+posting_amount ::= named_commodity | symbolized_commodity
+commodity_name ::= ('"' STRING '"') | STRING
+named_commodity ::= (NUMBER commodity_name) | (commodity_name NUMBER)
+symbolized_commodity ::= ('-'? CURRENCY_SYMBOL | CURRENCY_SYMBOL '-'?) NUMBER
+
+posting_cost ::= price_per_unit | total_price | virtual_price_per_unit | virtual_total_price
+price_per_unit ::= '@' posting_amount
+total_price ::= '@@' posting_amount
+virtual_price_per_unit ::= '(@)' posting_amount
+virtual_total_price ::= '(@@)' posting_amount
+
+balance_assertion ::= assertion_type posting_amount posting_cost?
+assertion_type ::= '=' | '=*' | '==' | '==*'
+
+p_dir ::= 'P' simple_date (commodity_name | CURRENCY_SYMBOL) posting_amount
+y_dir ::= 'Y' YEAR
+d_dir ::= 'D' posting_amount // TODO correct handling, thousand seperator bullshit
+commodity_dir ::= 'commodity' posting_amount
+end_aliases_dir ::= 'end aliases'
+include_dir ::= 'include' STRING
+
+alias_dir ::= 'alias' (basic_alias | regex_alias) '=' account
+basic_alias ::= account
+regex_alias ::= '/' REGEXP '/'
+

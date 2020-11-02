@@ -1,4 +1,4 @@
-package nl.jord1e.hledger.idea.rules
+package nl.jord1e.idea.pta.rules.ide.highlight
 
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory
 import com.intellij.openapi.project.Project

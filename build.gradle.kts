@@ -9,15 +9,19 @@ plugins {
     id("org.jetbrains.grammarkit") version "2020.2.1"
 }
 
-group = "nl.jord1e.hledger.idea"
+group = "nl.jord1e.pta.idea"
 version = "0.1.0"
 
 repositories {
     mavenCentral()
+    maven {
+        url = uri("https://www.jetbrains.com/intellij-repository/releases")
+    }
 }
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+//    implementation("com.jetbrains.intellij.platform:core:202.7660.26")
 }
 
 intellij {
@@ -44,14 +48,19 @@ tasks {
 //    }
 
     withType<RunIdeTask> {
-        dependsOn(":generateRulesLexer")
+        dependsOn("generateLexers")
         systemProperty("idea.is.internal", true)
+    }
+
+    task("generateLexers") {
+        dependsOn(":generateRulesLexer")
+        dependsOn(":generateJournalLexer")
     }
 
     task<GenerateLexer>("generateRulesLexer") {
         dependsOn(":generateRulesParser")
         source = "src/main/grammars/Rules.flex"
-        targetDir = "src/main/gen/nl/jord1e/hledger/idea/rules/"
+        targetDir = "src/main/gen/nl/jord1e/idea/pta/rules/lang/lexer"
         targetClass = "RulesLexer"
         purgeOldFiles = true
         outputs.upToDateWhen { false }
@@ -60,9 +69,28 @@ tasks {
     task<GenerateParser>("generateRulesParser") {
         source = "src/main/grammars/Rules.bnf"
         targetRoot = "src/main/gen/"
-        pathToParser = "/nl/jord1e/hledger/idea/rules/parser/RulesParser.java"
-        pathToPsiRoot = "/nl/jord1e/hledger/idea/rules/psi"
+        pathToParser = "/nl/jord1e/idea/pta/rules/lang/parser/RulesParser.java"
+        pathToPsiRoot = "/nl/jord1e/idea/pta/rules/lang/psi"
         purgeOldFiles = true
         outputs.upToDateWhen { false }
     }
+
+    task<GenerateLexer>("generateJournalLexer") {
+        dependsOn(":generateJournalParser")
+        source = "src/main/grammars/Journal.flex"
+        targetDir = "src/main/gen/nl/jord1e/idea/pta/journal/lang/lexer"
+        targetClass = "JournalLexer"
+        purgeOldFiles = true
+        outputs.upToDateWhen { false }
+    }
+
+    task<GenerateParser>("generateJournalParser") {
+        source = "src/main/grammars/Journal.bnf"
+        targetRoot = "src/main/gen/"
+        pathToParser = "/nl/jord1e/idea/pta/journal/lang/parser/JournalParser.java"
+        pathToPsiRoot = "/nl/jord1e/idea/pta/journal/lang/psi"
+        purgeOldFiles = true
+        outputs.upToDateWhen { false }
+    }
+
 }

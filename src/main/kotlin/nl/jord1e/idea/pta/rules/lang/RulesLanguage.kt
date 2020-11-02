@@ -1,4 +1,4 @@
-package nl.jord1e.hledger.idea.rules
+package nl.jord1e.idea.pta.rules.lang
 
 import com.intellij.lang.Language
 

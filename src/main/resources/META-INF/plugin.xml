@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>nl.jord1e.hledger.idea.hledger-idea-plugin</id>
+    <id>nl.jord1e.idea.pta.hledger-idea-plugin</id>
     <name>Plain Text Accounting</name>
     <vendor>Jord1e</vendor>
 
@@ -10,15 +10,27 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileType name="Hledger Rules" implementationClass="nl.jord1e.hledger.idea.rules.RulesFileType"
+        <fileType name="Hledger Rules" implementationClass="nl.jord1e.idea.pta.rules.lang.RulesFileType"
                   fieldName="INSTANCE"
                   language="RULES" extensions="rules"/>
         <lang.parserDefinition language="RULES"
-                               implementationClass="nl.jord1e.hledger.idea.rules.RulesParserDefinition"/>
+                               implementationClass="nl.jord1e.idea.pta.rules.lang.parser.RulesParserDefinition"/>
         <lang.syntaxHighlighterFactory language="RULES"
-                                       implementationClass="nl.jord1e.hledger.idea.rules.RulesSyntaxHighlighterFactory"/>
-        <colorSettingsPage implementation="nl.jord1e.hledger.idea.rules.RulesColorSettingsPage"/>
-        <lang.commenter language="RULES" implementationClass="nl.jord1e.hledger.idea.rules.RulesCommenter"/>
+                                       implementationClass="nl.jord1e.idea.pta.rules.ide.highlight.RulesSyntaxHighlighterFactory"/>
+        <colorSettingsPage implementation="nl.jord1e.idea.pta.rules.ide.colors.RulesColorSettingsPage"/>
+        <lang.commenter language="RULES" implementationClass="nl.jord1e.idea.pta.rules.ide.RulesCommenter"/>
+
+        <!-- Journal -->
+
+        <fileType name="Journal" implementationClass="nl.jord1e.idea.pta.journal.lang.JournalFileType"
+                  fieldName="INSTANCE"
+                  language="JOURNAL" extensions="journal"/>
+        <lang.parserDefinition language="JOURNAL"
+                               implementationClass="nl.jord1e.idea.pta.journal.lang.parser.JournalParserDefinition"/>
+        <lang.commenter language="JOURNAL" implementationClass="nl.jord1e.idea.pta.journal.ide.JournalCommenter"/>
+        <lang.braceMatcher language="JOURNAL" implementationClass="nl.jord1e.idea.pta.journal.ide.JournalBraceMatcher"/>
+        <lang.syntaxHighlighterFactory language="JOURNAL"
+                                       implementationClass="nl.jord1e.idea.pta.journal.ide.highlight.JournalSyntaxHighlighterFactory"/>
     </extensions>
 
     <actions>

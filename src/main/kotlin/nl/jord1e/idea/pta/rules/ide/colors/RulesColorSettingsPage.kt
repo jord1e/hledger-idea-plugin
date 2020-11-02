@@ -1,10 +1,11 @@
-package nl.jord1e.hledger.idea.rules
+package nl.jord1e.idea.pta.rules.ide.colors
 
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.ColorSettingsPage
+import nl.jord1e.idea.pta.rules.ide.highlight.RulesSyntaxHighlighter
 
 class RulesColorSettingsPage : ColorSettingsPage {
 
