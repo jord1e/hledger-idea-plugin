@@ -1,0 +1,24 @@
+{
+  parserClass="nl.jord1e.hledger.idea.journal.parser.RulesParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Rules"
+  psiImplClassSuffix="Impl"
+  psiPackage="nl.jord1e.hledger.idea.journal.psi"
+  psiImplPackage="nl.jord1e.hledger.idea.journal.psi.impl"
+
+  elementTypeHolderClass="nl.jord1e.hledger.idea.journal.psi.RulesTypes"
+  elementTypeClass="nl.jord1e.hledger.idea.journal.psi.JournalElementType"
+  tokenTypeClass="nl.jord1e.hledger.idea.journal.psi.JournalTokenType"
+
+//  psiImplUtilClass="nl.jord1e.hledger.idea.journal.psi.impl.RulesPsiImplUtil"
+tokens = [
+]
+}
+
+simpleFile ::= item_*
+
+private item_ ::= (COMMENT|CRLF)
+
+
