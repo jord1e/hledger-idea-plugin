@@ -1,0 +1,91 @@
+{
+  parserClass="nl.jord1e.idea.pta.rules.parser.RulesParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Rules"
+  psiImplClassSuffix="Impl"
+  psiPackage="nl.jord1e.idea.pta.rules.lang.psi"
+  psiImplPackage="nl.jord1e.idea.pta.rules.lang.psi.impl"
+
+  elementTypeHolderClass="nl.jord1e.idea.pta.rules.lang.psi.RulesTypes"
+  elementTypeClass="nl.jord1e.idea.pta.rules.lang.psi.RulesElementType"
+  tokenTypeClass="nl.jord1e.idea.pta.rules.lang.psi.RulesTokenType"
+
+//  psiImplUtilClass="nl.jord1e.hledger.idea.rules.psi.impl.RulesPsiImplUtil"
+  tokens = [
+    d_skip = 'skip'
+    d_fields = 'fields'
+    d_separator = 'separator'
+    d_end = 'end'
+    d_date_format = 'date-format'
+    d_newest_first = 'newest-first'
+    d_include = 'include'
+    d_balance_type = 'balance-type'
+    d_if = 'if'
+
+    datefmt = 'datefmt'
+
+    percent='%'
+    and='&'
+    quote='quote'
+//    tilde='~'
+    comma=','
+
+    number = 'regexp:[0-9]+'
+//    string = 'regexp:[^"]*'
+string='string'
+    comment = 'regexp:[#;][^\n\r]*'
+    regex='todo:regex'
+  ]
+
+//  implements("eol")="com.intellij.psi.PsiWhiteSpace"
+//  extends("eol")="com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl"
+//  name("eol")="<<eol>>"
+}
+
+root ::= rule*
+
+//private rule ::= field_list|field_assignment|conditional_block|skip|'newestfirst'|balance_type|comment|separator eol
+private rule ::= ((directive | comment) eol) | eol
+private directive ::= skip
+  | balance_type
+  | separator
+  | fields
+  | date_format
+  | newest_first
+  | if_block
+
+eol ::= "\n" | "\r" | "\r\n"
+skip ::= 'skip' number?
+balance_assertion_type ::= "=" | "=*" | "==" | "==*"
+balance_type ::= 'balance-type' balance_assertion_type
+separator ::= 'separator' string
+// todo folding: https://github.com/simonmichael/hledger/blob/master/hledger-lib/Hledger/Read/CsvReader.hs#L783
+date_format ::= 'date-format' datefmt
+newest_first ::= 'newest-first'
+// optional :? https://github.com/simonmichael/hledger/blob/master/hledger-lib/Hledger/Read/CsvReader.hs#L480
+fields ::= 'fields' field_name (',' field_name)*
+
+
+//value ::= char*
+
+private quoted_string ::= 'quote' 'string' 'quote'
+private bare_string ::= 'string'
+field_name ::= 'string'
+
+//journal_field ::= "date" | "date2" | "status" | "code" | "description" | "comment" | "account1" | "account2" | "amount" | journal_pseudo_field
+//journal_pseudo_field ::= "amount-in" | "amount-out" | "currency"
+//assignment_separator ::= " "
+//field_assignment ::= journal_field assignment_separator string
+
+// todo d_end
+field_ref ::= '%' (field_name | number)
+matcher ::= field_ref? 'todo:regex'
+multi_matcher ::= (eol matcher)(eol '&'? matcher)*
+predicate ::= matcher | multi_matcher
+if_block ::= 'if' predicate
+
+// indented_block
+//indented_block ::= field_assignment+
+
